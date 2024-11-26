@@ -1,0 +1,336 @@
+use barsy;
+
+-- Създаване на таблица за клиентите
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,      
+    loyaltyCard VARCHAR(50),           
+    name VARCHAR(100),                
+    phone VARCHAR(20),                
+    email VARCHAR(100)                 
+);
+
+-- Създаване на таблица за категории на артикулите
+CREATE TABLE Categories (
+    category_id INT PRIMARY KEY,      
+    category_name VARCHAR(100),  
+	description VARCHAR(250)
+);
+
+-- Създаване на таблица за артикулите
+CREATE TABLE Items (
+    item_id INT PRIMARY KEY,           
+    category_id INT,                   
+    name VARCHAR(100),                
+    price DECIMAL(10, 2),              
+    stock INT,                         
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id)  
+);
+GO
+
+-- Създаване на таблица за персонала
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY,
+    role VARCHAR(50),
+    name VARCHAR(100),
+    email VARCHAR(100),
+    password VARCHAR(255)
+);
+
+-- Създаване на таблица за поръчките
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    user_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10, 2),
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Създаване на асоциативна таблица между Orders и Items (OrderItems)
+CREATE TABLE OrderItems (
+    orderItems_id INT PRIMARY KEY,
+    order_id INT,
+    item_id INT,
+    quantity INT,
+    sub_total DECIMAL(10, 2),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (item_id) REFERENCES Items(item_id)
+);
+
+-- Създаване на таблица за плащания
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY,
+    order_id INT,
+    payment_date DATE,
+    payment_amount DECIMAL(10, 2),
+    payment_type VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+
+-- Създаване на таблица за инвентар
+CREATE TABLE Inventory (
+    item_id INT PRIMARY KEY,
+    quantity_in_stock INT,
+    reorder_level INT,
+    FOREIGN KEY (item_id) REFERENCES Items(item_id)
+);
+
+INSERT INTO Customers (customer_id, loyaltyCard, name, phone, email)
+VALUES 
+(1, 'LC123456', 'John Doe', '555-1234', 'johndoe@example.com'),
+(2, 'LC654321', 'Jane Smith', '555-5678', 'janesmith@example.com'),
+(3, 'LC987654', 'Alice Johnson', '555-8765', 'alice@example.com'),
+(4, 'LC321654', 'Bob Brown', '555-4321', 'bob@example.com'),
+(5, 'LC147258', 'Charlie White', '555-0000', 'charlie@example.com'),
+(6, 'LC258963', 'Diana Green', '555-1111', 'diana@example.com'),
+(7, 'LC789012', 'Eve Black', '555-2222', 'eve@example.com'),
+(8, 'LC345678', 'Frank Adams', '555-3333', 'frank@example.com'),
+(9, 'LC963852', 'Grace Kelly', '555-4444', 'grace@example.com'),
+(10, 'LC741258', 'Henry White', '555-5555', 'henry@example.com');
+
+INSERT INTO Categories (category_id, category_name, description) VALUES
+(1, 'Appetizers', 'Starter dishes like soups, salads, and small plates.'),
+(2, 'Main Courses', 'Main dishes including meat, fish, and vegetarian options.'),
+(3, 'Desserts', 'Sweet dishes to end the meal, such as cakes, pies, and ice cream.'),
+(4, 'Beverages', 'Drinks including soft drinks, juices, coffee, and alcoholic beverages.'),
+(5, 'Pasta', 'Various pasta dishes served with different sauces.'),
+(6, 'Pizza', 'Different types of pizza with a variety of toppings.'),
+(7, 'Side Dishes', 'Accompaniments like fries, rice, and vegetables.'),
+(8, 'Salads', 'Fresh salads with various dressings and ingredients.'),
+(9, 'Sandwiches', 'A selection of sandwiches and wraps, served cold or grilled.'),
+(10, 'Soups', 'Hot and cold soups, including vegetarian and meat-based options.'),
+(11, 'Non-Alcoholic Beverages', 'Soft drinks, juices, mocktails, and non-alcoholic drinks.'),
+(12, 'Alcoholic Beverages', 'Wine, beer, spirits, and cocktails.');
+
+INSERT INTO Items (item_id, category_id, name, price, stock) VALUES
+(1, 1, 'Caesar Salad', 5.99, 100),
+(2, 1, 'Tomato Soup', 4.49, 80),
+(3, 1, 'Bruschetta', 6.99, 50),
+(4, 2, 'Grilled Chicken Breast', 12.99, 40),
+(5, 2, 'Beef Steak', 19.99, 20),
+(6, 2, 'Vegetable Stir Fry', 10.99, 60),
+(7, 3, 'Chocolate Cake', 4.99, 150),
+(8, 3, 'Cheesecake', 5.49, 120),
+(9, 3, 'Ice Cream Sundae', 3.99, 200),
+(10, 4, 'Coca-Cola', 1.99, 500),
+(11, 11, 'Orange Juice', 2.49, 300),
+(12, 11, 'Apple Juice', 2.29, 250),
+(13, 11, 'Lemonade', 2.99, 350),
+(14, 12, 'Red Wine', 5.99, 100),
+(15, 12, 'White Wine', 6.99, 80),
+(16, 12, 'Beer', 3.49, 200),
+(17, 12, 'Vodka', 4.99, 60),
+(18, 12, 'Whiskey', 7.99, 40),
+(19, 12, 'Mojito', 6.49, 150);
+
+
+INSERT INTO Users (user_id, role, name, email, password) VALUES
+(1, 'Admin', 'Alice Green', 'alice.green@example.com', 'password123'),
+(2, 'Sales', 'Bob White', 'bob.white@example.com', 'password123'),
+(3, 'Support', 'Charlie Blue', 'charlie.blue@example.com', 'password123'),
+(4, 'Manager', 'Diana Black', 'diana.black@example.com', 'password123'),
+(5, 'Admin', 'Edward Red', 'edward.red@example.com', 'password123'),
+(6, 'Sales', 'Fay Purple', 'fay.purple@example.com', 'password123'),
+(7, 'Support', 'George Yellow', 'george.yellow@example.com', 'password123'),
+(8, 'Manager', 'Helen Pink', 'helen.pink@example.com', 'password123'),
+(9, 'Admin', 'Ivy Brown', 'ivy.brown@example.com', 'password123'),
+(10, 'Sales', 'Jack Gray', 'jack.gray@example.com', 'password123');
+
+INSERT INTO Orders (order_id, customer_id, user_id, order_date, total_amount) VALUES
+(1, 1, 2, '2024-11-01', 899.99),
+(2, 2, 3, '2024-11-02', 59.99),
+(3, 3, 4, '2024-11-03', 209.99),
+(4, 4, 5, '2024-11-04', 139.99),
+(5, 5, 6, '2024-11-05', 129.99),
+(6, 6, 7, '2024-11-06', 99.99),
+(7, 7, 8, '2024-11-07', 249.99),
+(8, 8, 9, '2024-11-08', 59.99),
+(9, 9, 10, '2024-11-09', 179.99),
+(10, 10, 1, '2024-11-10', 299.99);
+
+INSERT INTO Orders (order_id, customer_id, user_id, order_date, total_amount) VALUES
+(11, 10, 2, '2020-09-01', 9.12),
+(12, 5, 3, '2022-12-02', 59.99),
+(13, 10, 5,  '2021-11-03', 279.92),
+(14, 8, 2,  '2019-01-04', 139.99),
+(15, 10, 7, '2019-11-05', 129.19),
+(16, 8, 5, '2017-06-06', 99.99),
+(17, 5, 5, '2023-11-07', 149.59),
+(18, 2, 9, '2023-03-08', 89.99),
+(19, 1, 1, '2023-09-09', 119.99),
+(20, 10, 2, '2021-11-10', 269.02);
+
+INSERT INTO OrderItems (orderItems_id, order_id, item_id, quantity, sub_total) VALUES
+(1, 1, 1, 1, 799.99),
+(2, 1, 2, 1, 499.99),
+(3, 2, 3, 2, 39.98),
+(4, 2, 4, 1, 39.99),
+(5, 3, 5, 1, 89.99),
+(6, 3, 6, 1, 129.99),
+(7, 4, 7, 3, 38.97),
+(8, 4, 8, 1, 49.99),
+(9, 5, 9, 2, 19.98),
+(10, 5, 10, 1, 4.99);
+
+INSERT INTO Payments (payment_id, order_id, payment_date, payment_amount, payment_type) VALUES
+(1, 1, '2024-11-01', 899.99, 'Credit Card'),
+(2, 2, '2024-11-02', 59.99, 'Cash'),
+(3, 3, '2024-11-03', 209.99, 'Credit Card'),
+(4, 4, '2024-11-04', 139.99, 'PayPal'),
+(5, 5, '2024-11-05', 129.99, 'Credit Card'),
+(6, 6, '2024-11-06', 99.99, 'Cash'),
+(7, 7, '2024-11-07', 249.99, 'Credit Card'),
+(8, 8, '2024-11-08', 59.99, 'PayPal'),
+(9, 9, '2024-11-09', 179.99, 'Credit Card'),
+(10, 10, '2024-11-10', 299.99, 'Credit Card');
+
+INSERT INTO Payments (payment_id, order_id, payment_date, payment_amount, payment_type) VALUES
+(11, 11, '2020-09-01', 9.12, 'Credit Card'),
+(12, 12, '2022-12-02', 59.99, 'Cash'),
+(13, 13, '2021-11-03', 279.92, 'Credit Card'),
+(14, 14, '2019-01-04', 139.99, 'PayPal'),
+(15, 15, '2019-11-05', 129.19, 'Credit Card'),
+(16, 16, '2017-06-06', 99.99, 'Cash'),
+(17, 17, '2023-11-07', 149.59, 'Credit Card'),
+(18, 18, '2023-03-08', 89.99, 'PayPal'),
+(19, 19, '2023-09-09', 119.99, 'Credit Card'),
+(20, 20, '2021-11-10', 269.02, 'Credit Card');
+
+INSERT INTO Inventory (item_id, quantity_in_stock, reorder_level) VALUES
+(1, 50, 10),
+(2, 150, 20),
+(3, 200, 50),
+(4, 100, 20),
+(5, 30, 5),
+(6, 40, 10),
+(7, 300, 100),
+(8, 50, 10),
+(9, 150, 30),
+(10, 120, 15);
+
+
+CREATE PROCEDURE AddCustomer
+    @loyaltyCard VARCHAR(50),
+    @name VARCHAR(100),
+    @phone VARCHAR(20),
+    @email VARCHAR(100)
+AS
+BEGIN
+    INSERT INTO Customers (loyaltyCard, name, phone, email)
+    VALUES (@loyaltyCard, @name, @phone, @email);
+END;
+
+
+CREATE PROCEDURE UpdateInventoryAfterNewStock
+    @item_id INT,
+    @quantity INT
+AS
+BEGIN
+    UPDATE Inventory
+    SET quantity_in_stock = quantity_in_stock + @quantity
+    WHERE item_id = @item_id;
+END;
+
+CREATE PROCEDURE DeleteCustomer
+    @customer_id INT
+AS
+BEGIN
+    DELETE FROM Customers
+    WHERE customer_id = @customer_id;
+END;
+
+
+CREATE FUNCTION CalculateTotalInventory()
+RETURNS INT
+AS
+BEGIN
+    DECLARE @total INT;
+    SELECT @total = SUM(quantity_in_stock)
+    FROM Inventory;
+    RETURN @total;
+END;
+
+CREATE FUNCTION GetBestSellingItem()
+RETURNS INT
+AS
+BEGIN
+    DECLARE @item_id INT;
+    SELECT TOP 1 @item_id = item_id
+    FROM OrderItems
+    GROUP BY item_id
+    ORDER BY SUM(quantity) DESC;
+    RETURN @item_id;
+END;
+
+
+CREATE FUNCTION CheckItemStock(@item_id INT)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @stock INT;
+    SELECT @stock = quantity_in_stock
+    FROM Inventory
+    WHERE item_id = @item_id;
+    RETURN @stock;
+END;
+
+
+CREATE TRIGGER UpdateOrderTotalAfterOrderItemInsert
+ON OrderItems
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @order_id INT, @sub_total DECIMAL(10, 2);
+
+    SELECT @order_id = i.order_id, @sub_total = i.sub_total
+    FROM inserted i;
+
+    UPDATE Orders
+    SET total_amount = total_amount + @sub_total
+    WHERE order_id = @order_id;
+END;
+
+CREATE TRIGGER DeleteOrderItemsOnOrderDelete
+ON Orders
+AFTER DELETE
+AS
+BEGIN
+    DELETE FROM OrderItems
+    WHERE order_id IN (SELECT order_id FROM deleted);
+END;
+
+
+CREATE TRIGGER UpdateInventoryAfterPayment
+ON Payments
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @order_id INT, @payment_amount DECIMAL(10, 2);
+
+    SELECT @order_id = order_id, @payment_amount = payment_amount
+    FROM inserted;
+
+    DECLARE @item_id INT, @quantity INT;
+    DECLARE item_cursor CURSOR FOR
+    SELECT item_id, quantity
+    FROM OrderItems
+    WHERE order_id = @order_id;
+
+    OPEN item_cursor;
+    FETCH NEXT FROM item_cursor INTO @item_id, @quantity;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        UPDATE Inventory
+        SET quantity_in_stock = quantity_in_stock + @quantity
+        WHERE item_id = @item_id;
+
+        FETCH NEXT FROM item_cursor INTO @item_id, @quantity;
+    END;
+
+    CLOSE item_cursor;
+    DEALLOCATE item_cursor;
+END;
+
